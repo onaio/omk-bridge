@@ -143,6 +143,7 @@ ul li{
     background:#ddd;
     font-size:0.9em;
     padding:1em;
+    position: relative;
     z-index:10!important;
 }
 .navbar h2{
