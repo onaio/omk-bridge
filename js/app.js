@@ -2,6 +2,23 @@
 var Table = FixedDataTable.Table;
 var Column = FixedDataTable.Column;
 
+/* Full page layout components */
+var LoginPage = React.createClass({
+    displayName: "LoginPage",
+    render: function() {
+        return(
+            React.createElement("div", {className: "authbox", id: "login-box"},
+                React.createElement("h1", "OMK Bridge"),
+                React.createElement("div", {className: "form-holder"}, 
+                    React.createElement("div", {className: "navbar"}, 
+                        React.createElement(OnaAuthForm)
+                    )
+                )
+            )
+        );
+    }
+});
+
 var OnaAuthForm = React.createClass({displayName: "OnaAuthForm",
     handleSubmit: function(e) {
         e.preventDefault();
@@ -15,11 +32,25 @@ var OnaAuthForm = React.createClass({displayName: "OnaAuthForm",
     },
     render: function() {
         return (
-            React.createElement("form", {className: "form-signin", onSubmit: this.handleSubmit},
-                React.createElement("input", {type: "text", className: "form-control", placeholder: "Ona Username", autofocus: "autofocus", ref: "username"}),
-                React.createElement("input", {type: "password", className: "form-control", placeholder: "Ona Password", autoComplete: "off", ref: "password"}),
-                this.props.loginError ? React.createElement("p", {className: "bg-danger text-warning"}, "Wrong Username or Password!") : null,
-                React.createElement("button", {type: "submit", className: "btn btn-sm btn-primary btn-block"}, "Login into Ona")
+            React.createElement("form", {className: "pure-form pure-form-stacked form-signin", onSubmit: this.handleSubmit},
+                React.createElement("fieldset",
+                    this.props.loginError ? React.createElement("div", {className: "alert alert-error"}, 
+                    React.createElement("i", {className: "fa fa-times"}), "Enter the correct Username and Password") : null,
+                    
+                    React.createElement("div", {className: "pure-control-group"},
+                        React.createElement("label"),
+                        React.createElement("input", {type: "text", className: "form-control", placeholder: "Ona Username", autofocus: "autofocus", ref: "username"})),
+                    React.createElement("div", {className: "pure-control-group"},
+                        React.createElement("label"),
+                    React.createElement("input", {type: "password", className: "form-control", placeholder: "Ona Password", autoComplete: "off", ref: "password"})),
+                    React.createElement("div", {className: "pure-control-group"},
+                        React.createElement("button", {type: "submit", className: "pure-button pure-button-default"}, 
+                            React.createElement("i", {className: "fa fa-user"}), 
+                            React.createElement("span", {}, "Log In")
+                        ),
+                        React.createElement("a", {className: "forgot-password-link t-small", target: "_blank", href: "https://beta.ona.io/request-password-reset"}, "Forgot your password?")
+                    )
+                )
             )
         );
     }
@@ -51,7 +82,7 @@ var OnaAuth = React.createClass({displayName: "OnaAuth",
     },
     render: function() {
         var isLoggedIn = this.state.isLoggedIn;
-        var content = React.createElement(OnaAuthForm,
+        var content = React.createElement(LoginPage,
                                           {handleLogin: this.handleLogin, loginError: this.state.loginError});
         if(isLoggedIn) {
             content = React.createElement(

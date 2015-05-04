@@ -26,6 +26,9 @@ input[type="text"], input[type="email"], input[type="password"], textarea{
     padding:.5em .6em;
     vertical-align:middle;
 }
+button > i.fa{
+    margin-right:4px;
+}
 select{
     
 }
