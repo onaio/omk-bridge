@@ -212,6 +212,9 @@ i.fa + span{
     height:24em;
     max-width:60em;
 }
+#auth-osm-box .pure-g{
+    display:flex;
+}
 #osm-auth-logo{
     margin-top:1em;
     max-width:12em;
