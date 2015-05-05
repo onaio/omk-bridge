@@ -39,6 +39,11 @@ ul li{
     list-style:none;
 }
 
+/* Buttons */
+i.fa + span{
+    margin:0 4px;
+}
+
 /* Text*/
 .t-center{
     text-align:center;

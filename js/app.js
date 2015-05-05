@@ -24,7 +24,9 @@ var NavigationBar = React.createClass({
     displayName: "NavigationBar",
     getInitialState: function(){
         return {
-            navItems: []
+            navItems: [],
+            osmauth: null, // hides forms list unless osmauth=true
+            userloggedin: null
         }
     },
     render: function() {
@@ -681,7 +683,8 @@ var MainApp = React.createClass({displayName: "MainApp",
         return {
             ona_user: store.enabled ? store.get('ona_user', null): null,
             osm: null,
-            osmauth: null
+            osmauth: null,
+            fullpage: false
         };
     },
     setOnaUser: function(user) {
@@ -717,29 +720,24 @@ var MainApp = React.createClass({displayName: "MainApp",
     },
     render: function(){
         return (
-            React.createElement(
-                "div", {className: "main-container"},
+            React.createElement("div", {className: "wrapper"},
                 //this.state.osmauth === null ? React.createElement("h1", null, "OMK Bridge"): null,
-                React.createElement(NavigationBar, {}),
                 React.createElement(
-                    'div', {className: "row"},
-                    React.createElement(
-                        "div", {className: "col-sm-8"},
-                        React.createElement(OnaAuth, {
-                            url: this.props.onaLoginURL,
-                            onLoginSuccess: this.setOnaUser,
-                            ona_user: this.state.ona_user
-                        })
-                    ),
-                    React.createElement(
-                        "div", {className: "col-sm-4"},
-                        this.state.ona_user !== null ? React.createElement(OpenStreetMapAuth, {
-                            oauthConsumerKey: 'OTlOD6gfLnzP0oot7uA0w6GZdBOc5gQXJ0r7cdG4',
-                            oauthSecret: 'cHPXxC3JCa9PazwVA5XOQkmh4jQcIdrhFePBmbSJ',
-                            landing: '/',
-                            osmLoginSuccess: this.setOSMAuth
-                        }): null
-                    )
+                    "div", {className: "col-sm-8"},
+                    React.createElement(OnaAuth, {
+                        url: this.props.onaLoginURL,
+                        onLoginSuccess: this.setOnaUser,
+                        ona_user: this.state.ona_user
+                    })
+                ),
+                React.createElement(
+                    "div", {className: "col-sm-4"},
+                    this.state.ona_user !== null ? React.createElement(OpenStreetMapAuth, {
+                        oauthConsumerKey: 'OTlOD6gfLnzP0oot7uA0w6GZdBOc5gQXJ0r7cdG4',
+                        oauthSecret: 'cHPXxC3JCa9PazwVA5XOQkmh4jQcIdrhFePBmbSJ',
+                        landing: '/',
+                        osmLoginSuccess: this.setOSMAuth
+                    }): null
                 ),
                 //this.state.osmauth !== null ? React.createElement("h1", null, "OMK Bridge"): null,
                 this.state.osmauth !== null ? React.createElement(
