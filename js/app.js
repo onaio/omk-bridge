@@ -1,6 +1,7 @@
 /* global React, $, console, DigestAuthRequest, osmAuth, store, L, JXON, FixedDataTable */
 var Table = FixedDataTable.Table;
 var Column = FixedDataTable.Column;
+var SiteTitle = "OMK Bridge";
 
 /* Full page layout components */
 var LoginPage = React.createClass({
@@ -8,14 +9,56 @@ var LoginPage = React.createClass({
     render: function() {
         return(
             React.createElement("div", {className: "authbox", id: "login-box"},
-                React.createElement("h1", "OMK Bridge"),
+                React.createElement("h1", {}, SiteTitle),
                 React.createElement("div", {className: "form-holder"}, 
                     React.createElement("div", {className: "navbar"}, 
-                        React.createElement(OnaAuthForm)
+                        React.createElement(OnaAuthForm, {handleLogin: this.props.handleLogin})
                     )
                 )
             )
         );
+    }
+});
+
+var NavigationBar = React.createClass({
+    displayName: "NavigationBar",
+    getInitialState: function(){
+        return {
+            navItems: []
+        }
+    },
+    render: function() {
+        return(
+            React.createElement("div", {className: "navbar pure-g"},
+                React.createElement("div", {className: "container"},
+                    React.createElement("div", {className: "pure-u-2-3"},
+                        React.createElement("h2", {}, SiteTitle),
+                        React.createElement("ul", {className: "nav-menu"},
+                            React.createElement("li", {},
+                                React.createElement("a", {href: "#"}, "Forms")
+                            )
+                        )
+                    ),
+                    React.createElement("div", {className: "pure-u-1-3"},
+                        React.createElement("div", {className: "auth-dropdown dropdown right"},
+                            React.createElement("a", {href: "#"},
+                                React.createElement("i", {className: "fa fa-user"}),
+                                React.createElement("span", {className: "logged-in-user"}, "ukanga"),
+                                React.createElement("i", {className: "fa fa-caret-down"})
+                            ),
+                            React.createElement("ul", {className: "menu"},
+                                React.createElement("li", {},
+                                    React.createElement("a", {href: "#"}, "Unlink OpenStreetMaps.org")
+                                ),
+                                React.createElement("li", {}, 
+                                    React.createElement("a", {href: "#"}, "Logout")
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
     }
 });
 
@@ -676,7 +719,8 @@ var MainApp = React.createClass({displayName: "MainApp",
         return (
             React.createElement(
                 "div", {className: "main-container"},
-                this.state.osmauth === null ? React.createElement("h1", null, "OMK Bridge"): null,
+                //this.state.osmauth === null ? React.createElement("h1", null, "OMK Bridge"): null,
+                React.createElement(NavigationBar, {}),
                 React.createElement(
                     'div', {className: "row"},
                     React.createElement(
@@ -697,7 +741,7 @@ var MainApp = React.createClass({displayName: "MainApp",
                         }): null
                     )
                 ),
-                this.state.osmauth !== null ? React.createElement("h1", null, "OMK Bridge"): null,
+                //this.state.osmauth !== null ? React.createElement("h1", null, "OMK Bridge"): null,
                 this.state.osmauth !== null ? React.createElement(
                     'div', {className: "row"},
                     React.createElement(

@@ -51,9 +51,12 @@ ul li{
 }
 
 /* Layout */
+.pure-g{
+    display:block; /* override pure-css webkit-flex */
+}
 .container{
     margin:0 auto;
-    width:1024px;
+    max-width:1200px;
 }
 .absolute, .fixed-layout{
     top:0; bottom:0; left:0; right:0;
