@@ -272,12 +272,14 @@ var DataRow = React.createClass({displayName: "DataRow",
         return (
             React.createElement(
                 'div', {className: 'checkbox way-view' + highlight},
-                latest_version !== null && highlight === ''? React.createElement(
-                    'input', {type: 'checkbox', name: 'osm_id', value: this.props.data._id}):null,
-                React.createElement('a', {href: "#"+ way['@id'], onClick: this.toggleViewTags, onMouseOver: this.highlightWay}, "OSM Way: " + way['@id']),
-                React.createElement('span', {className: 'version'}, 'v' + version),
-                latest_version !== null? React.createElement('span', {className: latest_version !== version? 'latest-version': 'version'}, 'v' + latest_version): null,
-                this.state.show ? React.createElement('table', null, tags): null
+                React.createElement("label", null,
+                    latest_version !== null && highlight === ''? React.createElement(
+                        'input', {type: 'checkbox', name: 'osm_id', value: this.props.data._id}):null,
+                    React.createElement('a', {href: "#"+ way['@id'], onClick: this.toggleViewTags, onMouseOver: this.highlightWay}, "OSM Way: " + way['@id']),
+                    React.createElement('span', {className: 'version'}, 'v' + version),
+                    latest_version !== null? React.createElement('span', {className: latest_version !== version? 'latest-version': 'version'}, 'v' + latest_version): null
+                ),
+                    this.state.show ? React.createElement('table', null, tags): null
             )
         );
     }
@@ -337,7 +339,6 @@ var OSMMap = React.createClass({displayName: "OSMMap",
     render: function(){
         return (
             React.createElement("div", {className: "pure-u-2-3 absolute map-holder"},
-                React.createElement("h2", null, "Form Name"),
                 React.createElement('div', {className: 'map absolute'})
             )
         );
@@ -637,24 +638,33 @@ var OnaForms = React.createClass({displayName: "OnaForms",
         return (
             this.state.submissions.length > 0 && this.state.formid !== null && this.state.osm !== null && this.state.osm_fields !== undefined?
                 React.createElement(
-                    'div', null,
-                    React.createElement('h2', null, this.state.title),
-                    React.createElement(
-                        'form', {onSubmit: this.submitToOSM},
-                        React.createElement("button", {type: "submit", className: "btn btn-sm btn-primary btn-block"}, "Submit to OpenStreetMap.org"),
-                        React.createElement("br", null),
-                        React.createElement(
-                            'div', null,
-                            React.createElement("a", {onClick: this.previousPage, className: "btn btn-xs btn-default"}, "Previous"),
-                            React.createElement("a", {className: "btn btn-default btn-xs", onClick: this.selectAll}, "Select All"),
-                            React.createElement("a", {className: "btn btn-default btn-xs", onClick: this.unselectAll}, "UnSelect All"),
-                            React.createElement("a", {onClick: this.nextPage, className: "btn btn-xs btn-default btn-next"}, "Next")
+                    'div', {className: "pure-u-1-3 absolute submissions-holder"},
+                    React.createElement("h2", null, this.state.title),
+                    
+                    React.createElement('form', {onSubmit: this.submitToOSM, className: "pure-form pure-form-stacked"},
+                        React.createElement("button", {type: "submit", className: "pure-button pure-button-default"}, 
+                            React.createElement("i", {className: "fa fa-check"}), 
+                            "Submit to OpenStreetMap.org"
+                        ),
+                        React.createElement('div', {className: "form-list-actions"},
+                            React.createElement("a", {className: "pure-button pure-button-default", onClick: this.selectAll}, "Select All"),
+                            React.createElement("a", {className: "pure-button pure-button-default", onClick: this.unselectAll}, "UnSelect All"),
+                            React.createElement("span", {className: "right"},
+                                React.createElement("a", {onClick: this.previousPage, className: "pure-button pure-button-default"}, 
+                                    React.createElement("i", {className: "fa fa-chevron-left"})
+                                ),
+                                React.createElement("a", {onClick: this.nextPage, className: "pure-button pure-button-default"},
+                                    React.createElement("i", {className: "fa fa-chevron-right"})
+                                )
+                            )
                         ),
                         React.createElement(DataList, {data: this.state.submissions, highlightWay: this.props.highlightWay})
                     )
-                ): React.createElement(
-                    FormList, {data: this.state.forms, loadSubmissions: this.loadSubmissions}
                 )
+            : 
+            React.createElement(
+                FormList, {data: this.state.forms, loadSubmissions: this.loadSubmissions}
+            )
         );
     }
 });

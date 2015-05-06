@@ -26,9 +26,6 @@ input[type="text"], input[type="email"], input[type="password"], textarea{
     padding:.5em .6em;
     vertical-align:middle;
 }
-button > i.fa{
-    margin-right:4px;
-}
 select{
     
 }
@@ -40,6 +37,9 @@ ul li{
 }
 
 /* Buttons */
+button > i.fa{
+    margin-right:4px;
+}
 i.fa + span{
     margin:0 4px;
 }
@@ -241,12 +241,6 @@ i.fa + span{
 .form-list-actions > button{
     margin-right:0.5em;
 }
-.submission-search{
-    padding-bottom:0.6em;
-}
-.submission-search input[type="text"]{
-    width:96%;
-}
 .submission-row label{
     display: block;
     margin-top:0;
@@ -303,7 +297,7 @@ i.fa + span{
     border-top:1px solid #eee;
     margin-right:1em;
     overflow-y:auto;
-    top:14em;
+    top:11.5em;
 }
 
 .map-holder{
