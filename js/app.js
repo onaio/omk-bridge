@@ -1,19 +1,18 @@
 /* global React, $, console, DigestAuthRequest, osmAuth, store, L, JXON, FixedDataTable */
 var Table = FixedDataTable.Table;
 var Column = FixedDataTable.Column;
+
 var SiteTitle = "OMK Bridge";
+var UserData = {};
+var OSMAuthData = {};
 
 /* Full page layout components */
 var NavigationBar = React.createClass({
     displayName: "NavigationBar",
-    getInitialState: function(){
-        return {
-            navItems: [],
-            osmauth: null, // hides forms list unless osmauth=true
-            userloggedin: null
-        }
-    },
     render: function() {
+        var username = UserData.username;
+        var name = UserData.name;
+        
         return(
             React.createElement("div", {className: "navbar pure-g"},
                 React.createElement("div", {className: "container"},
@@ -29,15 +28,15 @@ var NavigationBar = React.createClass({
                         React.createElement("div", {className: "auth-dropdown dropdown right"},
                             React.createElement("a", {href: "#"},
                                 React.createElement("i", {className: "fa fa-user"}),
-                                React.createElement("span", {className: "logged-in-user"}, "ukanga"),
+                                React.createElement("span", {className: "logged-in-user"}, name),
                                 React.createElement("i", {className: "fa fa-caret-down"})
                             ),
                             React.createElement("ul", {className: "menu"},
                                 React.createElement("li", {},
-                                    React.createElement("a", {href: "#"}, "Unlink OpenStreetMaps.org")
+                                    React.createElement(OpenStreetMapAuth, {})
                                 ),
-                                React.createElement("li", {}, 
-                                    React.createElement("a", {href: "#"}, "Logout")
+                                React.createElement("li", {},
+                                    React.createElement(OnaAuth, {})    
                                 )
                             )
                         )
@@ -56,7 +55,7 @@ var LoginPage = React.createClass({
                 React.createElement("h1", {}, SiteTitle),
                 React.createElement("div", {className: "form-holder"}, 
                     React.createElement("div", {className: "navbar"}, "Login to Ona"),
-                    React.createElement(OnaAuthForm, {handleLogin: this.props.handleLogin, loginError: this.loginError})
+                    React.createElement(OnaAuthForm, {handleLogin: this.props.handleLogin, loginError: this.props.loginError})
                 )
             )
         );
@@ -67,20 +66,22 @@ var OSMAuthPage = React.createClass({
     displayName: "OSMAuthPage",
     render: function() {
         return(
-            React.createElement("div", {className: "form-holder"},
-               React.createElement(NavigationBar, {})
-            ),
-            React.createElement("div", {className: "pure-g auth-detail"},
-                React.createElement("div", {className: "pure-u-1-4"},
-                    React.createElement("img", {className: "img-responsive", 
-                                                src:"/img/osm_fixed.png", id: "osm-auth-logo"})
-                ),
-                React.createElement("div", {className: "pure-u-3-4 auth-text"},
-                    React.createElement("h2", {}, "Authorization required by OpenStreetMaps.org"),
-                    React.createElement("p", {}, "Log into your OpenStreetMap account to authorize mapping features. Save your changes and you will be redirected to the home page."),
-                    React.createElement("p", {}, 
-                        React.createElement(OpenStreetMapAuth, {})
-                    )
+            React.createElement("div", {className: "auth-box", id: "auth-osm-box"},
+                React.createElement("div", {className: "form-holder"},
+                    React.createElement(NavigationBar, {}),
+                    React.createElement("div", {className: "pure-g auth-detail"},
+                        React.createElement("div", {className: "pure-u-1-4"},
+                            React.createElement("img", {className: "img-responsive", 
+                                                        src:"/img/osm_fixed.png", id: "osm-auth-logo"})
+                        ),
+                        React.createElement("div", {className: "pure-u-3-4 auth-text"},
+                            React.createElement("h2", {}, "Authorization required by OpenStreetMaps.org"),
+                            React.createElement("p", {}, "Log into your OpenStreetMap account to authorize mapping features. Save your changes and you will be redirected to the home page."),
+                            React.createElement("p", {}, 
+                                React.createElement(OpenStreetMapAuth, {})
+                            )
+                        )
+                    )           
                 )
             )
         )
@@ -152,11 +153,11 @@ var OnaAuth = React.createClass({displayName: "OnaAuth",
         var isLoggedIn = this.state.isLoggedIn;
         var content = React.createElement(LoginPage,
                                           {handleLogin: this.handleLogin, loginError: this.state.loginError});
+        
         if(isLoggedIn) {
-            content = React.createElement(
-                'span', null, "User: " + this.state.data.name + "  ",
-                React.createElement('button', {className: "btn btn-sm btn-default", onClick: this.handleLogout}, "Logout")
-            );
+            this.state.data != null ? UserData = this.state.data : null;
+            
+            content = React.createElement('a', {href: "#", onClick: this.handleLogout}, "Logout");
         }
         return (content);
     }
@@ -694,9 +695,9 @@ var OpenStreetMapAuth = React.createClass({displayName: "OpenStreetMapAuth",
     render: function() {
         return (
             this.state.auth.authenticated() === false ?
-                React.createElement('button', {className: "pure-button pure-button-default", onClick: this.handleOSMLogin}, "Login to OpenStreetMap.org")
+                React.createElement('a', {href: "#", className: "pure-button pure-button-default", onClick: this.handleOSMLogin}, "Login to OpenStreetMap.org")
                     :
-                React.createElement('button', {className: "btn btn-sm btn-warning", onClick: this.handleOSMLogout}, "Unlink OpenStreetMap.org")
+                React.createElement('a', {href: "#", className: "pure-button pure-button-default", onClick: this.handleOSMLogout}, "Unlink OpenStreetMap.org")
         );
     }
 });
@@ -744,14 +745,12 @@ var MainApp = React.createClass({displayName: "MainApp",
     render: function(){
         return (
             React.createElement("div", {className: "wrapper"},
-                //this.state.osmauth === null ? React.createElement("h1", null, "OMK Bridge"): null,
                 React.createElement(OnaAuth, {
                     url: this.props.onaLoginURL,
                     onLoginSuccess: this.setOnaUser,
                     ona_user: this.state.ona_user
                 }),
-                React.createElement(
-                    "div", {className: "col-sm-4"},
+                React.createElement("div", {className: "col-sm-4"},
                     this.state.ona_user !== null ? React.createElement(OSMAuthPage, {
                         oauthConsumerKey: 'OTlOD6gfLnzP0oot7uA0w6GZdBOc5gQXJ0r7cdG4',
                         oauthSecret: 'cHPXxC3JCa9PazwVA5XOQkmh4jQcIdrhFePBmbSJ',
@@ -759,9 +758,7 @@ var MainApp = React.createClass({displayName: "MainApp",
                         osmLoginSuccess: this.setOSMAuth
                     }): null
                 ),
-                //this.state.osmauth !== null ? React.createElement("h1", null, "OMK Bridge"): null,
-                this.state.osmauth !== null ? React.createElement(
-                    'div', {className: "row"},
+                this.state.osmauth !== null ? React.createElement('div', {className: "row"},
                     React.createElement(
                         "div", {className: "col-sm-3"},
                         this.state.ona_user !== null ? React.createElement(
