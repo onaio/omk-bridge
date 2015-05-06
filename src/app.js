@@ -297,7 +297,7 @@ var DataList = React.createClass({displayName: "DataList",
         }.bind(this));
 
         return (
-            React.createElement('div', {className: 'data-list'}, rows)
+            React.createElement('div', {className: 'submissions-list absolute data-list'}, rows)
         );
     }
 });
