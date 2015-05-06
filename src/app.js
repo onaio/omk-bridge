@@ -2,7 +2,93 @@
 var Table = FixedDataTable.Table;
 var Column = FixedDataTable.Column;
 
-var OnaAuthForm = React.createClass({
+var SiteTitle = "OMK Bridge";
+var UserData = {};
+var OSMAuthData = {};
+
+/* Full page layout components */
+var NavigationBar = React.createClass({
+    displayName: "NavigationBar",
+    render: function() {
+        var username = UserData.username;
+        var name = UserData.name;
+        
+        return(
+            React.createElement("div", {className: "navbar pure-g"},
+                React.createElement("div", {className: "container"},
+                    React.createElement("div", {className: "pure-u-2-3"},
+                        React.createElement("h2", null, SiteTitle),
+                        React.createElement("ul", {className: "nav-menu"},
+                            React.createElement("li", null,
+                                React.createElement("a", {href: "#"}, "Forms")
+                            )
+                        )
+                    ),
+                    React.createElement("div", {className: "pure-u-1-3"},
+                        React.createElement("div", {className: "auth-dropdown dropdown right"},
+                            React.createElement("a", {href: "#"},
+                                React.createElement("i", {className: "fa fa-user"}),
+                                React.createElement("span", {className: "logged-in-user"}, name),
+                                React.createElement("i", {className: "fa fa-caret-down"})
+                            ),
+                            React.createElement("ul", {className: "menu"},
+                                React.createElement("li", null,
+                                    React.createElement(OpenStreetMapAuth, {})
+                                ),
+                                React.createElement("li", null,
+                                    React.createElement(OnaAuth, {})    
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    }
+});
+
+var LoginPage = React.createClass({
+    displayName: "LoginPage",
+    render: function() {
+        return(
+            React.createElement("div", {className: "auth-box", id: "login-box"},
+                React.createElement("h1", null, SiteTitle),
+                React.createElement("div", {className: "form-holder"}, 
+                    React.createElement("div", {className: "navbar"}, "Login to Ona"),
+                    React.createElement(OnaAuthForm, {handleLogin: this.props.handleLogin, loginError: this.props.loginError})
+                )
+            )
+        );
+    }
+});
+
+var OSMAuthPage = React.createClass({
+    displayName: "OSMAuthPage",
+    render: function() {
+        return(
+            React.createElement("div", {className: "auth-box", id: "auth-osm-box"},
+                React.createElement("div", {className: "form-holder"},
+                    React.createElement(NavigationBar, {}),
+                    React.createElement("div", {className: "pure-g auth-detail"},
+                        React.createElement("div", {className: "pure-u-1-4"},
+                            React.createElement("img", {className: "img-responsive", 
+                                                        src:"/img/osm_fixed.png", id: "osm-auth-logo"})
+                        ),
+                        React.createElement("div", {className: "pure-u-3-4 auth-text"},
+                            React.createElement("h2", null, "Authorization required by OpenStreetMaps.org"),
+                            React.createElement("p", null, "Log into your OpenStreetMap account to authorize mapping features. Save your changes and you will be redirected to the home page."),
+                            React.createElement("p", null, 
+                                React.createElement(OpenStreetMapAuth, {})
+                            )
+                        )
+                    )           
+                )
+            )
+        )
+    }
+});
+
+var OnaAuthForm = React.createClass({displayName: "OnaAuthForm",
     handleSubmit: function(e) {
         e.preventDefault();
         var username = React.findDOMNode(this.refs.username).value.trim();
@@ -15,18 +101,32 @@ var OnaAuthForm = React.createClass({
     },
     render: function() {
         return (
-            React.createElement("form", {className: "form-signin", onSubmit: this.handleSubmit},
-                React.createElement("input", {type: "text", className: "form-control", placeholder: "Ona Username", autofocus: "autofocus", ref: "username"}),
-                React.createElement("input", {type: "password", className: "form-control", placeholder: "Ona Password", autoComplete: "off", ref: "password"}),
-                this.props.loginError ? React.createElement("p", {className: "bg-danger text-warning"}, "Wrong Username or Password!") : null,
-                React.createElement("button", {type: "submit", className: "btn btn-sm btn-primary btn-block"}, "Login into Ona")
+            React.createElement("form", {className: "pure-form pure-form-stacked form-signin", onSubmit: this.handleSubmit},
+                React.createElement("fieldset",
+                    this.props.loginError ? React.createElement("div", {className: "alert alert-error"}, 
+                    React.createElement("i", {className: "fa fa-times"}), "Enter the correct Username and Password") : null,
+                    
+                    React.createElement("div", {className: "pure-control-group"},
+                        React.createElement("label"),
+                        React.createElement("input", {type: "text", className: "form-control", placeholder: "Ona Username", autofocus: "autofocus", ref: "username"})),
+                    React.createElement("div", {className: "pure-control-group"},
+                        React.createElement("label"),
+                    React.createElement("input", {type: "password", className: "form-control", placeholder: "Ona Password", autoComplete: "off", ref: "password"})),
+                    React.createElement("div", {className: "pure-control-group"},
+                        React.createElement("button", {type: "submit", className: "pure-button pure-button-default"}, 
+                            React.createElement("i", {className: "fa fa-user"}), 
+                            React.createElement("span", null, "Log In")
+                        ),
+                        React.createElement("a", {className: "forgot-password-link t-small", target: "_blank", href: "https://beta.ona.io/request-password-reset"}, "Forgot your password?")
+                    )
+                )
             )
         );
     }
 });
 
 // Ona Authentication Component
-var OnaAuth = React.createClass({
+var OnaAuth = React.createClass({displayName: "OnaAuth",
     getInitialState: function() {
         var isLoggedIn = this.props.ona_user !== null ? true: false;
 
@@ -51,18 +151,19 @@ var OnaAuth = React.createClass({
     },
     render: function() {
         var isLoggedIn = this.state.isLoggedIn;
-        var content = React.createElement(OnaAuthForm,
+        var content = React.createElement(LoginPage,
                                           {handleLogin: this.handleLogin, loginError: this.state.loginError});
+        
         if(isLoggedIn) {
-            content = React.createElement(
-                'span', null, "User: " + this.state.data.name + "  ",
-                React.createElement('button', {className: "btn btn-sm btn-default", onClick: this.handleLogout}, "Logout")
-            );
+            this.state.data != null ? UserData = this.state.data : null;
+            
+            content = React.createElement('a', {href: "#", onClick: this.handleLogout}, "Logout");
         }
         return (content);
     }
 });
-var FormRow = React.createClass({
+
+var FormRow = React.createClass({displayName: "FormRow",
     loadSubmissions: function(e) {
         e.preventDefault();
         this.props.onFormSelected(
@@ -89,7 +190,7 @@ var FormRow = React.createClass({
     }
 });
 
-var FormList = React.createClass({
+var FormList = React.createClass({displayName: "FormList",
     render: function() {
         var formNodes = this.props.data.map(function(form) {
             return React.createElement(
@@ -98,7 +199,7 @@ var FormList = React.createClass({
         }.bind(this));
         return (
             React.createElement(
-                'table', {className: 'table form-list'}, React.createElement(
+                'table', {className: 'pure-table pure-table-bordered form-list', id: "forms-table"}, React.createElement(
                     "thead", null, React.createElement(
                         "tr", null,
                         React.createElement("th", null, "Form Name"),
@@ -110,7 +211,7 @@ var FormList = React.createClass({
     }
 });
 
-var DataRow = React.createClass({
+var DataRow = React.createClass({displayName: "DataRow",
     getInitialState: function() {
         return {show: false, data: this.props.data, conflicts: false};
     },
@@ -182,7 +283,7 @@ var DataRow = React.createClass({
     }
 });
 
-var DataList = React.createClass({
+var DataList = React.createClass({displayName: "DataList",
     render: function() {
         var rows = this.props.data.map(function(submission) {
             return React.createElement(DataRow, {
@@ -195,7 +296,7 @@ var DataList = React.createClass({
     }
 });
 
-var OSMMap = React.createClass({
+var OSMMap = React.createClass({displayName: "OSMMap",
     componentDidMount: function() {
         L.mapbox.accessToken = 'pk.eyJ1Ijoib25hIiwiYSI6IlVYbkdyclkifQ.0Bz-QOOXZZK01dq4MuMImQ';
         var map = this.map = L.mapbox.map(
@@ -235,7 +336,10 @@ var OSMMap = React.createClass({
     },
     render: function(){
         return (
-            React.createElement('div', {className: 'map'})
+            React.createElement("div", {className: "pure-u-2-3 absolute map-holder"},
+                React.createElement("h2", null, "Form Name"),
+                React.createElement('div', {className: 'map absolute'})
+            )
         );
     }
 });
@@ -362,7 +466,7 @@ var submitToOSM = function(auth, ona_user, changes, formid) {
     });
 };
 
-var OnaForms = React.createClass({
+var OnaForms = React.createClass({displayName: "OnaForms",
     getInitialState: function() {
         return {
             ona_user: this.props.ona_user,
@@ -555,7 +659,7 @@ var OnaForms = React.createClass({
     }
 });
 
-var OpenStreetMapAuth = React.createClass({
+var OpenStreetMapAuth = React.createClass({displayName: "OpenStreetMapAuth",
     getInitialState: function() {
         var auth = osmAuth({
             oauth_consumer_key: this.props.oauthConsumerKey,
@@ -594,20 +698,20 @@ var OpenStreetMapAuth = React.createClass({
     render: function() {
         return (
             this.state.auth.authenticated() === false ?
-                React.createElement('button', {className: "btn btn-sm btn-success", onClick: this.handleOSMLogin},
-                    "Login to OpenStreetMap.org")
+                React.createElement('a', {href: "#", className: "pure-button pure-button-default", onClick: this.handleOSMLogin}, "Login to OpenStreetMap.org")
                     :
-                React.createElement('button', {className: "btn btn-sm btn-warning", onClick: this.handleOSMLogout}, "Unlink OpenStreetMap.org")
+                React.createElement('a', {href: "#", className: "pure-button pure-button-default", onClick: this.handleOSMLogout}, "Unlink OpenStreetMap.org")
         );
     }
 });
 
-var MainApp = React.createClass({
+var MainApp = React.createClass({displayName: "MainApp",
     getInitialState: function(){
         return {
             ona_user: store.enabled ? store.get('ona_user', null): null,
             osm: null,
-            osmauth: null
+            osmauth: null,
+            fullpage: false
         };
     },
     setOnaUser: function(user) {
@@ -643,34 +747,24 @@ var MainApp = React.createClass({
     },
     render: function(){
         return (
-            React.createElement(
-                "div", {className: "main-container"},
-                this.state.osmauth === null ? React.createElement("h1", null, "OMK Bridge"): null,
-                React.createElement(
-                    'div', {className: "row"},
-                    React.createElement(
-                        "div", {className: "col-sm-8"},
-                        React.createElement(OnaAuth, {
-                            url: this.props.onaLoginURL,
-                            onLoginSuccess: this.setOnaUser,
-                            ona_user: this.state.ona_user
-                        })
-                    ),
-                    React.createElement(
-                        "div", {className: "col-sm-4"},
-                        this.state.ona_user !== null ? React.createElement(OpenStreetMapAuth, {
-                            oauthConsumerKey: 'OTlOD6gfLnzP0oot7uA0w6GZdBOc5gQXJ0r7cdG4',
-                            oauthSecret: 'cHPXxC3JCa9PazwVA5XOQkmh4jQcIdrhFePBmbSJ',
-                            landing: '/',
-                            osmLoginSuccess: this.setOSMAuth
-                        }): null
-                    )
+            React.createElement("div", {className: "wrapper"},
+                React.createElement(OnaAuth, {
+                    url: this.props.onaLoginURL,
+                    onLoginSuccess: this.setOnaUser,
+                    ona_user: this.state.ona_user
+                }),
+                React.createElement("div", {className: "col-sm-4"},
+                    this.state.ona_user !== null ? React.createElement(OSMAuthPage, {
+                        oauthConsumerKey: 'OTlOD6gfLnzP0oot7uA0w6GZdBOc5gQXJ0r7cdG4',
+                        oauthSecret: 'cHPXxC3JCa9PazwVA5XOQkmh4jQcIdrhFePBmbSJ',
+                        landing: '/',
+                        osmLoginSuccess: this.setOSMAuth
+                    }): null
                 ),
-                this.state.osmauth !== null ? React.createElement("h1", null, "OMK Bridge"): null,
-                this.state.osmauth !== null ? React.createElement(
-                    'div', {className: "row"},
-                    React.createElement(
-                        "div", {className: "col-sm-3"},
+                this.state.osmauth !== null ? React.createElement('div', {className: "container pure-g"},
+                    React.createElement("div", {className: "pure-u-1-1"},
+                        React.createElement("h3", {}, "Forms")),
+                    React.createElement("div", {className: "pure-u-3-5"},
                         this.state.ona_user !== null ? React.createElement(
                             OnaForms, {
                                 ona_user: this.state.ona_user,
@@ -679,11 +773,12 @@ var MainApp = React.createClass({
                                 highlightWay: this.highlightWay
                             }): null
                     ),
-                    React.createElement(
-                        "div", {className: "col-sm-9"},
-                        this.state.osm !== null ?
-                            React.createElement(OSMMap, {xml: this.state.osm, setMapDataLayer: this.setMapDataLayer}): null
-                    )
+                    this.state.osm !== null ?
+                        React.createElement(OSMMap, {xml: this.state.osm, setMapDataLayer: this.setMapDataLayer})
+                        :
+                        React.createElement("div", {className: "pure-u-2-5"},
+                            React.createElement("div", {className: "big-hint t-center"}, "Click on a form to view its submissions")
+                        )
                 ): null
             )
         );
