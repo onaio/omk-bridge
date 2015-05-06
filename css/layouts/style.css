@@ -248,8 +248,8 @@ i.fa + span{
     width:96%;
 }
 .submission-row label{
+    display: block;
     margin-top:0;
-    display:inline-block;
 }
 .submission-row label input[type="checkbox"]{
     top:2px;
@@ -267,6 +267,9 @@ i.fa + span{
     cursor:pointer;
     font-size:0.6em;
     padding:1px 8px 0px;
+    position:relative;
+    right:0.6em;
+    top:-3em;
 }
 .submission-row:hover .detail-toggle, .detail-toggle:hover{
     background:#ccc;
