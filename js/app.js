@@ -88,6 +88,18 @@ var OSMAuthPage = React.createClass({
     }
 });
 
+var Loader = React.createClass({displayName: "Loader",
+    getInitialState: function(){
+        return {loadingText: 'Loading...'};
+    },
+    render: function(){
+        React.createElement("div", {className: "loader"},
+            React.createElement("i", {className: "fa fa-spin fa-spinner"}),
+            React.createElement("span", {className: "loading-text"}, this.state.loadingText)
+        );
+    }
+});
+
 var OnaAuthForm = React.createClass({displayName: "OnaAuthForm",
     handleSubmit: function(e) {
         e.preventDefault();
@@ -275,11 +287,15 @@ var DataRow = React.createClass({displayName: "DataRow",
                 React.createElement("label", null,
                     latest_version !== null && highlight === ''? React.createElement(
                         'input', {type: 'checkbox', name: 'osm_id', value: this.props.data._id}):null,
-                    React.createElement('a', {href: "#"+ way['@id'], onClick: this.toggleViewTags, onMouseOver: this.highlightWay}, "OSM Way: " + way['@id']),
+                    React.createElement('a', {href: "#"+ way['@id'], onMouseOver: this.highlightWay}, "OSM Way: " + way['@id']),
                     React.createElement('span', {className: 'version'}, 'v' + version),
                     latest_version !== null? React.createElement('span', {className: latest_version !== version? 'latest-version': 'version'}, 'v' + latest_version): null
                 ),
-                    this.state.show ? React.createElement('table', null, tags): null
+                React.createElement("span", {className: "detail-toggle right", onClick: this.toggleViewTags},
+                    this.state.show ? React.createElement("i", {className: "fa fa-minus"}) 
+                                    : React.createElement("i", {className: "fa fa-plus"})
+                ),
+                this.state.show ? React.createElement('table', null, tags): null
             )
         );
     }
@@ -293,7 +309,7 @@ var DataList = React.createClass({displayName: "DataList",
         }.bind(this));
 
         return (
-            React.createElement('div', {className: 'data-list'}, rows)
+            React.createElement('div', {className: 'submissions-list absolute data-list'}, rows)
         );
     }
 });

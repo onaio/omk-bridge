@@ -294,7 +294,7 @@ var DataRow = React.createClass({displayName: "DataRow",
                 React.createElement("span", {className: "detail-toggle right", onClick: this.toggleViewTags},
                     this.state.show ? React.createElement("i", {className: "fa fa-minus"}) 
                                     : React.createElement("i", {className: "fa fa-plus"})
-                )
+                ),
                 this.state.show ? React.createElement('table', null, tags): null
             )
         );
