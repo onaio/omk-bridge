@@ -88,6 +88,18 @@ var OSMAuthPage = React.createClass({
     }
 });
 
+var Loader = React.createClass({displayName: "Loader",
+    getInitialState: function(){
+        return {loadingText: 'Loading...'};
+    },
+    render: function(){
+        React.createElement("div", {className: "loader"},
+            React.createElement("i", {className: "fa fa-spin fa-spinner"}),
+            React.createElement("span", {className: "loading-text"}, this.state.loadingText)
+        );
+    }
+});
+
 var OnaAuthForm = React.createClass({displayName: "OnaAuthForm",
     handleSubmit: function(e) {
         e.preventDefault();
